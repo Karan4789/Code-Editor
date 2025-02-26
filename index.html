@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Code Editor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Monaco Editor Loader -->
+    <script>
+        var require = { paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs" } };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/loader.js"></script>
+</head>
+
+<body>
+    <div class="btn"><i class="fa-solid fa-sun" id="mode-toggle"></i></div>
+    <div class="container">
+        <h1>Online Code Editor</h1>
+        <label for="language">Select Language:</label>
+        <select id="language">
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="c">C</option>
+        </select>
+
+        <div class="editor-container">
+            <div id="editor" style="height: 400px; width: 100%;"></div>
+        </div>
+        <div class="buttons">
+            <button onclick="runCode()">Run Code</button>
+            <button onclick="reviewCode()">Review Code</button>
+        </div>
+    </div>
+    <div class="container2">
+        <h2>Output:</h2>
+        <pre id="output">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eaque non vel, consectetur debitis recusandae excepturi magni iusto nostrum. Commodi, neque! Cumque at aperiam, quia quasi culpa consequatur id sit soluta.</pre>
+    </div>
+
+    <script>
+        // Initialize Monaco editor after loading the Monaco library
+        require(["vs/editor/editor.main"], function () {
+            var editor = monaco.editor.create(document.getElementById("editor"), {
+                value: `// Write your code here\nconsole.log("Hello World");`,
+                language: "javascript"
+            });
+        });
+    </script>
+</body>
+
+</html>
