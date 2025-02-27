@@ -1,48 +1,10 @@
 
+document.getElementById("mode-toggle").addEventListener("click", function () {
+    document.body.classList.toggle("dark-mode"); // Toggle dark mode on body
 
-
-require(["vs/editor/editor.main"], function () {
-    monaco.editor.defineTheme("customTheme" ,{
-        base: "vs-dark",  
-        inherit: true,
-        rules: [],
-        colors: {
-            "editor.background": "#120e25",  
-            "editor.foreground": "#FFFFFF",  
-            "editorCursor.foreground": "#FFFFFF",
-        }
-        });
-
-    monaco.editor.setTheme("customTheme");  // Apply custom theme
+    const isDarkMode = document.body.classList.contains("dark-mode");
+    editor.updateOptions({ theme: isDarkMode ? "vs-light" : "vs-dark" }); 
 });
-
-
-// Function to update language dynamically
-function updateLanguage() {
-    const language = document.getElementById("language").value;
-    monaco.editor.setModelLanguage(window.editor.getModel(), language);
-}
-
-// Add event listener for language selection
-document.getElementById("language").addEventListener("change", updateLanguage);
-
-
-monaco.editor.defineTheme("customTheme", {
-    base: "vs-dark",  // Choose "vs" (light), "vs-dark" (dark), or "hc-black"
-    inherit: true,
-    rules: [
-        // You can customize the editor's text and other UI elements here.
-        // The background rule here is redundant as we define it directly under colors.
-    ],
-    colors: {
-        "editor.background": "#120e25",  // Custom dark background color
-        "editor.foreground": "#FFFFFF",  // White text color
-        "editorCursor.foreground": "#FFFFFF"  // Cursor color for contrast
-    }
-});
-
-// Apply the custom theme
-monaco.editor.setTheme("customTheme");
 
 /* Light and Dark Mode */ 
 

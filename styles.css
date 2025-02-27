@@ -1,7 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    text-align: center;
+    background-color: #F2EBE3;
     margin: 0;
     padding: 0;
 }
@@ -91,7 +90,7 @@ button:hover {
 }
 
 pre {
-    background: #eee;
+    background: #F2EBE3;
     padding: 10px;
     text-align: left;
     font-family: monospace;
@@ -138,6 +137,11 @@ body.dark .container{
 
 body.light pre{
     background-color: white;
+}
+
+
+body.dark pre {
+    background-color:  #120e25;
 }
 
 body.dark textarea {
