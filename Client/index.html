@@ -51,7 +51,23 @@
 
         function updateLanguage() {
             var language = document.getElementById("language").value;
-            monaco.editor.setModelLanguage(editor.getModel(), language);
+
+            var defaultCode 
+               switch (language){
+                case "Python":
+                    defaultCode = "# Write your python ";
+                    break;
+                case "C":
+                    defaultCode = "/* Write Your Python Code here */"
+                    break;    
+               }
+
+            if (editor.getModel()) {
+                editor.getModel().dispose();
+            }
+
+            var newModel = monaco.editor.createModel(defaultCode, language);
+            editor.setModel(newModel);
         }
 
         function runCode() {
