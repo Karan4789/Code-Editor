@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
-async function executeCode({ language, code }, tempDir) {
+async function executeCode({ language, code, input }, tempDir) {
     const fileId = uuidv4();
     let filePath, command;
 
@@ -15,12 +15,63 @@ async function executeCode({ language, code }, tempDir) {
                 command = `node "${filePath}"`;
                 break;
             case 'python':
-                filePath = path.join(tempDir, `${fileId}.py`);
-                await fs.writeFile(filePath, code);
-                command = process.platform === 'win32' ?
-                    `python "${filePath}"` :
-                    `python3 "${filePath}" 2>&1 || python "${filePath}" 2>&1`;
-                break;
+                const pythonPath = path.join(tempDir, `${fileId}.py`);
+                await fs.writeFile(pythonPath, code);
+                
+                return new Promise((resolve, reject) => {
+                    let isTerminated = false;
+                    const process = spawn('python', [pythonPath], {
+                        stdio: ['pipe', 'pipe', 'pipe']
+                    });
+
+                    let stdout = '';
+                    let stderr = '';
+                    let inputTimeout;
+
+                    // Set input timeout
+                    const setInputTimer = () => {
+                        clearTimeout(inputTimeout);
+                        inputTimeout = setTimeout(() => {
+                            if (!isTerminated) {
+                                process.kill();
+                                isTerminated = true;
+                                resolve({ error: 'Program timed out waiting for input' });
+                            }
+                        }, 10000); // 10 second timeout for input
+                    };
+
+                    process.stdout.on('data', (data) => {
+                        stdout += data.toString();
+                        if (data.toString().toLowerCase().includes('input') || 
+                            data.toString().includes('Enter')) {
+                            setInputTimer();
+                        }
+                    });
+
+                    process.stderr.on('data', (data) => {
+                        stderr += data.toString();
+                    });
+
+                    if (input) {
+                        clearTimeout(inputTimeout);
+                        process.stdin.write(input);
+                        process.stdin.end();
+                    }
+
+                    process.on('close', (code) => {
+                        fs.unlink(pythonPath).catch(() => {});
+                        if (code !== 0) {
+                            resolve({ error: stderr || 'Process exited with error' });
+                        } else {
+                            resolve({ output: stdout });
+                        }
+                    });
+
+                    process.on('error', (err) => {
+                        fs.unlink(pythonPath).catch(() => {});
+                        reject(new Error(`Execution failed: ${err.message}`));
+                    });
+                });
             case 'c':
                 const sourcePath = path.join(tempDir, `${fileId}.c`);
                 const execPath = path.join(tempDir, `${fileId}.exe`);
@@ -38,21 +89,16 @@ async function executeCode({ language, code }, tempDir) {
                         });
                     });
 
-                    // Execute compiled code with input support
+                    // Execute with better stream handling
                     const result = await new Promise((resolve, reject) => {
                         const process = spawn(execPath, [], {
-                            timeout: 10000,
+                            stdio: ['pipe', 'pipe', 'pipe'],
                             windowsHide: true
                         });
 
                         let stdout = '';
                         let stderr = '';
-
-                        // Provide input immediately
-                        process.stdin.write('3\n');  // Number of processes
-                        process.stdin.write('24 3 3\n');  // Burst times
-                        process.stdin.end();
-
+                        
                         process.stdout.on('data', (data) => {
                             stdout += data.toString();
                         });
@@ -75,12 +121,23 @@ async function executeCode({ language, code }, tempDir) {
                             if (code !== 0) {
                                 resolve({ error: stderr || 'Process exited with non-zero code' });
                             } else {
-                                resolve({ output: stdout });
+                                // Format output for consistent display
+                                const formattedOutput = stdout
+                                    .replace(/\r\n/g, '\n')
+                                    .replace(/\r/g, '\n')
+                                    .trim();
+                                resolve({ output: formattedOutput + '\n' });
                             }
                         });
+
+                        // Handle program input
+                        if (code.includes('scanf') || code.includes('gets')) {
+                            process.stdin.write('3\n');  // Default input
+                            process.stdin.end();
+                        }
                     });
 
-                    // Cleanup C files
+                    // Cleanup files
                     await fs.unlink(sourcePath).catch(() => {});
                     await fs.unlink(execPath).catch(() => {});
                     
@@ -91,11 +148,12 @@ async function executeCode({ language, code }, tempDir) {
                     await fs.unlink(execPath).catch(() => {});
                     return { error: error.message };
                 }
+                break;
             default:
                 throw new Error('Unsupported language');
         }
 
-        // Handle JavaScript and Python execution
+        // Handle JavaScript execution
         const result = await new Promise((resolve, reject) => {
             exec(command, { timeout: 10000 }, async (error, stdout, stderr) => {
                 try {

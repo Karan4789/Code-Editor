@@ -3,6 +3,8 @@ import axios from 'axios';
 import CodeEditor from './components/CodeEditor';
 import OutputDisplay from './components/OutputDisplay';
 import ThemeToggle from './components/ThemeToggle';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCode } from '@fortawesome/free-solid-svg-icons';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -15,10 +17,21 @@ function App() {
     const [isDarkMode, setIsDarkMode] = useState(() => 
         window.matchMedia('(prefers-color-scheme: dark)').matches
     );
+    const [inputBuffer, setInputBuffer] = useState('');
+    const [pendingRequest, setPendingRequest] = useState(null);
+    const [waitingForInput, setWaitingForInput] = useState(false);
 
     useEffect(() => {
         document.documentElement.classList.toggle('dark', isDarkMode);
     }, [isDarkMode]);
+
+    useEffect(() => {
+        return () => {
+            if (pendingRequest) {
+                pendingRequest.abort();
+            }
+        };
+    }, [pendingRequest]);
 
     const getDefaultCode = (lang) => {
         switch (lang) {
@@ -54,6 +67,13 @@ console.log(greet("World"));`;
         setError('');
     };
 
+    const handleTerminalInput = (input) => {
+        setInputBuffer(input);
+        if (language === 'c' && output.includes('Enter')) {
+            setOutput(prev => prev + '\n' + input);
+        }
+    };
+
     const runCode = async () => {
         if (!code.trim()) {
             setError("Please write some code before running.");
@@ -66,29 +86,53 @@ console.log(greet("World"));`;
             return;
         }
 
+        // Cancel any pending request
+        if (pendingRequest) {
+            pendingRequest.abort();
+        }
+
         setIsLoading(true);
         setOutput('');
         setError('');
 
+        // Create new abort controller
+        const abortController = new AbortController();
+        setPendingRequest(abortController);
+
         try {
             const response = await axios.post(`${API_URL}/execute`, {
-                language: language,
-                code: code,
+                language,
+                code,
+                input: inputBuffer
+            }, {
+                signal: abortController.signal,
+                timeout: 30000 // Increased to 30 seconds
             });
+
             if (response.data.error) {
                 setError(response.data.error);
                 setOutput('');
+                setWaitingForInput(false);
             } else {
-                setOutput(response.data.output);
+                // Format the output before setting it
+                const formattedOutput = response.data.output?.trim() || '';
+                setOutput(formattedOutput + '\n');
+                setWaitingForInput(response.data.output.toLowerCase().includes('input') || 
+                                   response.data.output.toLowerCase().includes('enter'));
                 setError('');
             }
         } catch (err) {
-            console.error("API Error:", err);
-            const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || "Failed to connect to the execution server.";
-            setError(`API Request Failed: ${errorMessage}`);
+            if (axios.isCancel(err)) {
+                setError('Execution cancelled');
+            } else {
+                console.error("API Error:", err);
+                const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || "Failed to connect to the execution server.";
+                setError(`API Request Failed: ${errorMessage}`);
+            }
             setOutput('');
         } finally {
             setIsLoading(false);
+            setPendingRequest(null);
         }
     };
 
@@ -96,8 +140,14 @@ console.log(greet("World"));`;
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
             <div className="max-w-7xl mx-auto px-4 py-6">
                 <header className="flex items-center justify-between mb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-teal-500 to-blue-500 bg-clip-text text-transparent">
-                        Online Code Editor
+                    <h1 className="text-3xl md:text-4xl font-bold flex items-center gap-2">
+                        <span className="bg-gradient-to-r from-teal-500 to-blue-500 bg-clip-text text-transparent">
+                            Online Code Editor
+                        </span>
+                        <FontAwesomeIcon 
+                            icon={faCode} 
+                            className="text-teal-500"
+                        />
                     </h1>
                     <ThemeToggle 
                         isDark={isDarkMode} 
@@ -147,7 +197,7 @@ console.log(greet("World"));`;
 
                     <div className="lg:w-96 space-y-4">
                         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                            Output
+                            Output Terminal
                         </h2>
                         
                         {error && (
@@ -157,7 +207,11 @@ console.log(greet("World"));`;
                             </div>
                         )}
 
-                        <OutputDisplay output={output} />
+                        <OutputDisplay 
+                            output={output} 
+                            onInput={handleTerminalInput}
+                            isDarkMode={isDarkMode}
+                        />
                     </div>
                 </div>
             </div>
