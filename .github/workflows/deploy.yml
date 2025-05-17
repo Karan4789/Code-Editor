@@ -31,6 +31,8 @@ jobs:
         run: |
           cd Client
           npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
