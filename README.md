@@ -1,60 +1,111 @@
-# Code Editor
+# Online Code Editor
 
-A modern code editor with support for multiple programming languages.
+A modern, full-stack web application that allows users to write and execute code in multiple programming languages directly in the browser.
 
-## Prerequisites
+## 🚀 Live Demo
 
-- Node.js (v14 or higher)
-- Python (for Python code execution)
-- GCC (for C code execution)
+- Frontend: [Code Editor App](https://code-editor-a4020y2bn-karans-projects-554647fa.vercel.app)
 
-## Setup & Running
+## ✨ Features
 
-1. **Install Dependencies**
+- Support for multiple programming languages:
+  - JavaScript
+  - Python
+  - C
+- Real-time code execution
+- Dark/Light theme toggle
+- Interactive terminal output
+- Input handling for programs
+- Syntax highlighting
+- Error handling and display
 
-   First, install dependencies for both frontend and backend:
+## 🛠️ Tech Stack
 
-   ```bash
-   # Install backend dependencies
-   cd Server
-   npm install
+### Frontend
+- React.js
+- Vite
+- Monaco Editor
+- Tailwind CSS
+- Axios
 
-   # Install frontend dependencies
-   cd ../Client
-   npm install
-   ```
+### Backend
+- Node.js
+- Express.js
+- Python3
+- GCC
+- Railway (Deployment)
+- Nixpacks
 
-2. **Start the Backend Server**
+## 🏗️ Architecture
 
-   ```bash
-   # In the Server directory
-   npm run dev
-   ```
+- Frontend deployed on Vercel
+- Backend deployed on Railway
+- RESTful API communication
+- Secure code execution environment
 
-   The backend will run on http://localhost:5000
+## 🚦 Getting Started
 
-3. **Start the Frontend Development Server**
+### Prerequisites
+- Node.js 18.x or higher
+- Python 3.x
+- GCC compiler
 
-   ```bash
-   # In the Client directory
-   npm run dev
-   ```
+### Local Development
 
-   The frontend will run on http://localhost:5173
+1. Clone the repository
+```bash
+git clone https://github.com/karan4789/Code-Editor.git
+cd Code-Editor
+```
 
-4. **Open the Application**
+2. Install Frontend Dependencies
+```bash
+cd Client
+npm install
+```
 
-   Open your browser and navigate to:
-   http://localhost:5173
+3. Install Backend Dependencies
+```bash
+cd ../Server
+npm install
+```
 
-## Supported Languages
+4. Start Backend Server
+```bash
+npm run dev
+```
 
-- JavaScript
-- Python
-- C
+5. Start Frontend Development Server
+```bash
+cd ../Client
+npm run dev
+```
 
-## Development
+The application will be available at `http://localhost:5173`
 
-- Backend runs on Express.js
-- Frontend built with React + Vite
-- Code editing powered by Monaco Editor
+## 🔑 Environment Variables
+
+### Frontend (.env)
+```
+VITE_API_URL=your_backend_url/api
+```
+
+### Backend
+```
+NODE_ENV=production
+PORT=3000
+```
+
+## 📝 License
+
+[MIT](LICENSE)
+
+## 🙏 Acknowledgments
+
+- Monaco Editor for the code editing interface
+- Railway for hosting the backend
+- Vercel for hosting the frontend
+
+## 👨‍💻 Author
+
+Karan - [GitHub Profile](https://github.com/karan4789)
