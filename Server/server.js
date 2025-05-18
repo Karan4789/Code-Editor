@@ -11,8 +11,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? [
-        'https://your-frontend-domain.vercel.app', // Replace with your frontend domain
-        'http://localhost:5173'  // Development frontend
+        'https://karan4789.github.io',
+        'http://localhost:5173'
       ]
     : '*'
 }));
