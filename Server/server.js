@@ -9,9 +9,13 @@ const PORT = process.env.PORT || 3000;
 
 // Configure CORS for production
 app.use(cors({
-  origin: ['https://code-editor-alpha-five.vercel.app/', 'http://localhost:5173'],
-  methods: ['GET', 'POST'],
-  credentials: true
+  origin: [
+    'https://code-editor-alpha-five.vercel.app', 
+    'http://localhost:5173'
+  ],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  credentials: true,
+  optionsSuccessStatus: 200
 }));
 
 app.use(express.json());
