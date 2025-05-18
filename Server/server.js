@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { executeCode } = require('./Server/execution/codeExecutor');
+const { executeCode } = require('./execution/codeExecutor');
 const os = require('os');
 
 const app = express();
