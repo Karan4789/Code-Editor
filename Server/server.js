@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 // Configure CORS for production
 app.use(cors({
-  origin: ['https://karan4789.github.io', 'http://localhost:5173'],
+  origin: ['https://code-editor-alpha-five.vercel.app/', 'http://localhost:5173'],
   methods: ['GET', 'POST'],
   credentials: true
 }));
@@ -36,13 +36,11 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Only start the server if not running on Vercel
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-        console.log(`Temp directory: ${TEMP_DIR}`);
-    });
-}
+// Start the server for Railway
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Temp directory: ${TEMP_DIR}`);
+});
 
-// Export the express app for Vercel
+// Export the express app for compatibility
 module.exports = app;
