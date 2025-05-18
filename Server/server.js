@@ -10,7 +10,8 @@ const PORT = process.env.PORT || 3000;
 // Configure CORS for production
 app.use(cors({
   origin: [
-    'https://code-editor-alpha-five.vercel.app', 
+    'https://code-editor-a4020y2bn-karans-projects-554647fa.vercel.app',
+    'https://code-editor-alpha-five.vercel.app',
     'http://localhost:5173'
   ],
   methods: ['GET', 'POST', 'OPTIONS'],
