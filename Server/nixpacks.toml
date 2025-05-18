@@ -1,8 +1,22 @@
 [phases.setup]
-nixPkgs = ["python3", "gcc", "gnumake"]
+nixPkgs = [
+    "nodejs_18",
+    "python3",
+    "gcc",
+    "gnumake",
+    "npm"
+]
+
+[env]
+NODE_ENV = "production"
+PATH = "/usr/local/bin:/usr/bin:${PATH}"
 
 [phases.install]
-cmds = ["npm install"]
+cmds = [
+    "npm config set registry https://registry.npmjs.org/",
+    "npm install"
+]
 
 [start]
 cmd = "npm start"
+watchPatterns = ["server.js", "execution/**"]
