@@ -40,6 +40,12 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Add error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
+});
+
 // Start the server for Railway
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
