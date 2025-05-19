@@ -142,7 +142,7 @@ console.log(greet("World"));`;
                 <header className="flex items-center justify-between mb-8">
                     <h1 className="text-3xl md:text-4xl font-bold flex items-center gap-2">
                         <span className="bg-gradient-to-r from-teal-500 to-blue-500 bg-clip-text text-transparent">
-                            Online Code Editor
+                            CodeNimbus
                         </span>
                         <FontAwesomeIcon 
                             icon={faCode} 
