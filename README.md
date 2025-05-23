@@ -4,7 +4,7 @@ A modern, full-stack web application that allows users to write and execute code
 
 ## 🚀 Live Demo
 
-- Frontend: [Code Editor App](https://code-editor-a4020y2bn-karans-projects-554647fa.vercel.app)
+- Frontend: [Code Editor App](https://code-editor-alpha-five.vercel.app/)
 
 ## ✨ Features
 
